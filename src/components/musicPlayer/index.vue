@@ -2,7 +2,7 @@
   <div class="h-20 w-full">
     <div class="flex h-1/6 w-full items-center">
       <el-slider
-        :disabled="store.playList.length === 0"
+        :disabled="store.hasPlayList"
         v-model="Playprogress"
         :show-tooltip="false"
         class="!h-0"
@@ -12,11 +12,13 @@
     </div>
     <div class="flex h-5/6 w-full">
       <!-- 左边 -->
-      <div class="flex h-full w-2/12">
+      <div class="flex h-full w-3/12">
         <div class="hidden h-full w-1/2 whitespace-nowrap lg:block">
           <el-image
-            src="
-             https://picsum.photos/200/300
+            :src="
+              store.hasPlayList
+                ? store.playList[store.currentIndex].al.picUrl
+                : ''
             "
             class="float-right h-full"
             fit="fill"
@@ -32,16 +34,18 @@
         </div>
         <div class="h-full w-full lg:w-1/2">
           <div class="flex h-1/2 w-full items-center justify-center">
-            <!-- {{ store.playList[store.currentIndex].name }} -->
-            <span>La Vie En Rose </span>
+            {{
+              store.hasPlayList ? store.playList[store.currentIndex].name : ""
+            }}
           </div>
           <div class="flex h-1/2 w-full items-center justify-center">
-            <span>Sophie Milman </span>
-            <!-- <span
-              v-for="(item, index) in store.playList[store.currentIndex].ar"
+            <span
+              v-for="(item, index) in store.hasPlayList
+                ? store.playList[store.currentIndex].ar
+                : []"
               :key="index"
               >{{ item.name }}
-            </span> -->
+            </span>
           </div>
         </div>
       </div>
@@ -126,13 +130,13 @@
         </div>
       </div>
       <!-- 右边 -->
-      <div class="flex h-full w-2/12">
-        <div class="flex w-24 items-center text-center">
-          <span>
-            {{ formatDate(Playprogress) + "/" + formatDate(max) }}
-          </span>
-        </div>
-        <div class="m-6 flex items-center">
+      <div class="relative h-full w-3/12">
+        <songList
+          :songListstate="songListstate"
+          @hideList="songListstate = false"
+          class="absolute bottom-16 my-2 w-full transition-all duration-300"
+        />
+        <div class="m-6 flex items-center" @click="showSongList">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -154,8 +158,7 @@
 </template>
 
 <script setup>
-// import yy from "@/assets/music/123.mp3";
-
+// import songList from "./components/songList.vue";
 const store = useStore();
 // console.log(store.playList);
 // console.log(store.currentIndex);
@@ -169,16 +172,21 @@ const max = computed(() => {
     ? store.playList[store.currentIndex].dt / 1000
     : 0;
 });
+//  <div class="flex hidden w-24 items-center text-center">
+//           <span>
+//             {{ formatDate(Playprogress) + "/" + formatDate(max) }}
+//           </span>
+//         </div>
 // 格式化时间,HH:mm,传入单位秒
-const formatDate = computed(() => {
-  return (time) => {
-    if (time === undefined) return "00:00";
-    const date = new Date(time * 1000);
-    const m = date.getMinutes();
-    const s = date.getSeconds();
-    return (m < 10 ? "0" + m : m) + ":" + (s < 10 ? "0" + s : s);
-  };
-});
+// const formatDate = computed(() => {
+//   return (time) => {
+//     if (time === undefined) return "00:00";
+//     const date = new Date(time * 1000);
+//     const m = date.getMinutes();
+//     const s = date.getSeconds();
+//     return (m < 10 ? "0" + m : m) + ":" + (s < 10 ? "0" + s : s);
+//   };
+// });
 const input = (val) => {
   audio.value.currentTime = val;
   // 取最后一次的值
@@ -223,6 +231,11 @@ const switchSongs = (flag) => {
   }
   audioState.value = true;
   audio.value.play();
+};
+const songListstate = ref(true);
+const showSongList = () => {
+  songListstate.value = !songListstate.value;
+  console.log("store:", store.playList);
 };
 </script>
 

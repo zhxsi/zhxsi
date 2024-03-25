@@ -1,9 +1,9 @@
 <template>
   <div class="h-20 w-full">
-    <div class="flex h-1/6 w-full items-center">
+    <div class="flex h-1/6 w-full items-center overflow-hidden">
       <el-slider
-        :disabled="store.hasPlayList"
-        v-model="Playprogress"
+        :disabled="!store.hasPlayList"
+        v-model="playprogress"
         :show-tooltip="false"
         class="!h-0"
         @input="input"
@@ -13,7 +13,7 @@
     <div class="flex h-5/6 w-full">
       <!-- 左边 -->
       <div class="relative flex h-full w-3/12 overflow-hidden">
-        <div class="absolute h-full w-1/2 bg-white">
+        <div class="absolute z-10 h-full w-1/2 bg-white">
           <el-image
             :src="
               store.hasPlayList
@@ -32,10 +32,7 @@
             </template>
           </el-image>
         </div>
-        <div
-          class="absolute right-0 -z-10 h-full w-1/2 translate-x-full"
-          ref="songinfo"
-        >
+        <div class="absolute right-0 h-full w-1/2" ref="songref">
           <div
             class="flex h-1/2 w-full items-center justify-center whitespace-nowrap"
           >
@@ -146,21 +143,28 @@
           @hideList="songListstate = false"
           class="absolute bottom-16 my-2 w-full transition-all duration-300"
         />
-        <div class="m-6 flex items-center" @click="showSongList">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="1.5"
-            stroke="currentColor"
-            class="h-6 w-6"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 0 1 0 3.75H5.625a1.875 1.875 0 0 1 0-3.75Z"
-            />
-          </svg>
+        <div class="flex h-full w-full">
+          <div class="mx-3 my-6 w-24 text-center">
+            <span>
+              {{ formatDate(playprogress) + "/" + formatDate(max) }}
+            </span>
+          </div>
+          <div class="mx-3 my-6 flex items-center" @click="showSongList">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="h-6 w-6"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 0 1 0 3.75H5.625a1.875 1.875 0 0 1 0-3.75Z"
+              />
+            </svg>
+          </div>
         </div>
       </div>
     </div>
@@ -171,12 +175,8 @@
 import gsap from "gsap";
 const store = useStore();
 
-// console.log(store.playList);
-// console.log(store.currentIndex);
-// console.log(store.playList[store.currentIndex].url);
-
 // 当前播放歌曲时间
-const Playprogress = ref(0);
+const playprogress = ref(0);
 // 获取歌曲总时长,单位秒
 const max = computed(() => {
   return store.playList.length !== 0
@@ -189,39 +189,39 @@ const max = computed(() => {
 //           </span>
 //         </div>
 // 格式化时间,HH:mm,传入单位秒
-// const formatDate = computed(() => {
-//   return (time) => {
-//     if (time === undefined) return "00:00";
-//     const date = new Date(time * 1000);
-//     const m = date.getMinutes();
-//     const s = date.getSeconds();
-//     return (m < 10 ? "0" + m : m) + ":" + (s < 10 ? "0" + s : s);
-//   };
-// });
+const formatDate = computed(() => {
+  return (time) => {
+    if (time === undefined) return "00:00";
+    const date = new Date(time * 1000);
+    const m = date.getMinutes();
+    const s = date.getSeconds();
+    return (m < 10 ? "0" + m : m) + ":" + (s < 10 ? "0" + s : s);
+  };
+});
 const input = (val) => {
   audio.value.currentTime = val;
   // 取最后一次的值
 };
-const songinfo = ref(null); // 歌名
+// 歌曲信息的滚动动画
+const songref = ref(null);
+const songinfo = ref(null);
+const playAnimation = () => {
+  songinfo.value = gsap.set(songref.value, { x: 180 });
+  songinfo.value = gsap.to(songref.value, {
+    x: -180,
+    repeat: -1,
+    duration: 10,
+    ease: "linear",
+  });
+};
+
 onMounted(() => {
-  // audio.value.src = store.playList[store.currentIndex].url.replace(
-  //   "http",
-  //   "https",
-  // );
   audio.value.src = store.hasPlayList
     ? store.playList[store.currentIndex].url.replace("http", "https")
     : "";
-  gsap.to(songinfo.value, {
-    // 向左滚动，360度
-    x: -180,
-    // 无限循环
-    repeat: -1,
-    // 持续时间
-    duration: 15,
-    // 速度
-    ease: "linear",
-  });
+  playAnimation();
 });
+
 const audio = ref(null);
 const audioState = ref(false);
 const prev = () => {
@@ -234,7 +234,8 @@ const prev = () => {
 };
 // 当前播放的时间节点
 const updata = () => {
-  Playprogress.value = audio.value.currentTime;
+  playprogress.value = audio.value.currentTime;
+  console.log(" playprogress.value:", playprogress.value);
 };
 const switchSongs = (flag) => {
   if (flag) {
@@ -242,21 +243,26 @@ const switchSongs = (flag) => {
       store.currentIndex = 0;
     } else {
       store.currentIndex--;
+      songinfo.value.restart();
     }
   } else {
     if (store.currentIndex >= store.playList.length - 1) {
       store.currentIndex = store.playList.length - 1;
     } else {
       store.currentIndex++;
+      songinfo.value.restart();
     }
   }
+  // songinfo.value.play();
+
   audioState.value = true;
-  audio.value.play();
+  // audio.value.play();
 };
 const songListstate = ref(false);
 const showSongList = () => {
   songListstate.value = !songListstate.value;
-  console.log("store:", store.playList);
+  // 停止动画
+  gsap.killTweensOf(songinfo.value);
 };
 </script>
 

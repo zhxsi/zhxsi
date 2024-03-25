@@ -26,7 +26,7 @@ const props = defineProps({
   songListstate: Boolean,
 });
 const store = useStore();
-console.log("store:", store.playList);
+// console.log("store:", store.playList);
 // 切换歌曲
 const changeSong = (index) => {
   store.currentIndex = index;

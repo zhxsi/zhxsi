@@ -2,7 +2,9 @@
   <div
     v-if="props.modalVisible"
     class="overflow-auto whitespace-pre-wrap rounded-lg bg-slate-100 duration-500"
-    :class="[!isEmptyObject(obj) ? 'h-96 p-4' : 'h-0 p-0']"
+    :class="[
+      !isEmptyObject(obj) && props.search != '' ? 'h-96 p-4' : 'h-0 p-0',
+    ]"
     style=""
   >
     <el-scrollbar>
@@ -53,7 +55,6 @@ const isEmptyObject = (obj) => {
 // 计算属性
 const capitalize = computed(() => {
   return (str) => {
-    console.log("str:", str);
     const obj = {
       songs: "歌曲",
       artists: "歌手",

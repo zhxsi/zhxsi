@@ -21,22 +21,18 @@
 import sidebar from "./components/sidebar.vue";
 import parapet from "./components/parapet.vue";
 import musicPlayer from "@/components/musicPlayer/index.vue";
-const include = ref([]);
 const router = useRoute();
+
 // include处理方法
+const include = ref([]);
 const includeHandler = (e) => {
   include.value.push(e);
   include.value.forEach((item, index) => {
-    //  如果有重复的值，先删除原来的值，再添加新的值
     if (include.value.indexOf(item) !== index) {
       include.value.splice(index, 1);
     }
   });
-  // console.log(123, include.value);
 };
-// onMounted(() => {
-//   includeHandler("layout");
-// });
 onBeforeRouteUpdate((to, from) => {
   includeHandler(router.name);
 });

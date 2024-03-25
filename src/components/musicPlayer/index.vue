@@ -232,7 +232,7 @@ const switchSongs = (flag) => {
   audioState.value = true;
   audio.value.play();
 };
-const songListstate = ref(true);
+const songListstate = ref(false);
 const showSongList = () => {
   songListstate.value = !songListstate.value;
   console.log("store:", store.playList);

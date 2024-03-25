@@ -3,7 +3,6 @@ export const useStore = defineStore("main", {
   state: () => {
     return {
       user: null,
-      img: "https://store.zhxsi.link/动漫/IMG_20230322_220929.jpg",
       // 当前侧边栏索引
       activeIndex: "0",
       // 当前播放列表
@@ -47,6 +46,7 @@ export const useStore = defineStore("main", {
     getCookie(cookie) {
       this.user.cookie = cookie;
     },
+    // 设置loading状态
   },
   persist: true,
 });

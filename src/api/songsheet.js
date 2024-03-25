@@ -46,3 +46,11 @@ export function topPlaylist(data) {
     params: data,
   });
 }
+// 新碟上架
+export function topAlbum(data) {
+  return request({
+    url: "/top/album",
+    method: "POST",
+    params: data,
+  });
+}

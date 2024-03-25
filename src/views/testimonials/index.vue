@@ -1,10 +1,11 @@
 <template>
-  <div class="flex flex-col items-center justify-between outline">
+  <div class="flex flex-col items-center justify-between">
+    <!--  -->
     <div class="my-4 flex h-80 w-full">
       <div class="relative mx-6 h-full w-2/3 rounded-md bg-slate-100">
-        <div class="absolute h-full w-full">
+        <div class="absolute z-10 h-full w-full">
           <el-carousel
-            class="z-10 m-auto h-full w-10/12"
+            class="m-auto h-full w-10/12"
             @change="getBannerIndex"
             indicator-position="none"
             :interval="5000"
@@ -39,30 +40,29 @@
         <el-button @click="handleCreate" v-if="!stores.account">按钮</el-button>
       </div>
     </div>
+    <!--  -->
     <div class="my-4 flex h-60 w-full">
       <div class="mx-6 h-full w-full overflow-hidden rounded-md">
         <div class="flex h-1/6 w-full items-center justify-around px-8">
           <div class="flex h-full w-2/3 items-center">
             <div class="text-xl font-bold">推荐歌单</div>
-            <div>
-              <!-- <router-link
+            <div class="ml-6">
+              <span
                 v-for="item in playlistCat"
                 :key="item.id"
-                class="mx-4"
-                @click="xk(item)"
+                class="color-slate-500 cursor-pointer font-sans text-xs font-bold antialiased"
+                @click="handleSongList(item)"
               >
-                <el-link type="primary" :underline="false">{{
-                  item.name
-                }}</el-link>
-              </router-link> -->
+                {{ item.name }}
+                <el-divider direction="vertical"></el-divider>
+              </span>
             </div>
           </div>
           <div class="flex h-full w-1/3 items-center justify-end">
-            <!-- <router-link class="text-blue-500">
-              <el-link type="primary" target="_blank"
-                >更多</el-link
-              ></router-link
-            > -->
+            <span
+              class="color-slate-500 cursor-pointer font-sans text-sm font-bold antialiased"
+              >更多</span
+            >
           </div>
         </div>
         <div class="h-5/6 w-full">
@@ -74,9 +74,14 @@
                 class="sm:w-63 relative m-1 aspect-[10/10] w-44 flex-none cursor-pointer overflow-hidden rounded-xl bg-zinc-100 dark:bg-zinc-800 sm:rounded-2xl"
                 @click="handleSongList(item)"
               >
+                <span
+                  class="absolute left-0 right-0 top-0 bg-black bg-opacity-50 p-2 text-xs font-black text-white antialiased"
+                >
+                  {{ formatNumber(item.playCount) }}
+                </span>
                 <img alt="" :src="item.picUrl" class="h-full w-full" />
                 <span
-                  class="absolute bottom-0 left-0 right-0 z-10 bg-black bg-opacity-50 p-2 text-white"
+                  class="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 p-2 text-white"
                 >
                   {{ item.name }}
                 </span>
@@ -86,8 +91,44 @@
         </div>
       </div>
     </div>
+    <!--  -->
     <div class="my-4 flex h-60 w-full">
-      <div class="mx-6 h-full w-full rounded-md bg-slate-100">1</div>
+      <div class="mx-6 h-full w-full overflow-hidden rounded-md">
+        <div class="flex h-1/6 w-full items-center justify-around px-8">
+          <div class="flex h-full w-2/3 items-center">
+            <div class="text-xl font-bold">新碟上架</div>
+          </div>
+          <div class="flex h-full w-1/3 items-center justify-end">
+            <span
+              class="color-slate-500 cursor-pointer font-sans text-sm font-bold antialiased"
+              >更多</span
+            >
+          </div>
+        </div>
+        <div class="h-5/6 w-full">
+          <el-scrollbar>
+            <div class="flex">
+              <div
+                v-for="item in newAlbum"
+                :key="item.id"
+                class="sm:w-63 relative m-1 aspect-[10/10] w-44 flex-none cursor-pointer overflow-hidden rounded-xl bg-zinc-100 dark:bg-zinc-800 sm:rounded-2xl"
+                @click="handleSongList(item)"
+              >
+                <img
+                  alt=""
+                  :src="item.picUrl.replace('http:', 'https:')"
+                  class="h-full w-full"
+                />
+                <span
+                  class="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 p-2 text-white"
+                >
+                  {{ item.name }}
+                </span>
+              </div>
+            </div>
+          </el-scrollbar>
+        </div>
+      </div>
     </div>
     <login :dialogVisible="dialogVisible" @hideDialog="dialogVisible = false" />
   </div>
@@ -95,12 +136,13 @@
 
 <script setup>
 import { homeBanner } from "@/api/homePage";
-import { playlistHot, personalized } from "@/api/songsheet";
+import { playlistHot, personalized, topAlbum } from "@/api/songsheet";
 import login from "@/components/login/index.vue";
 onMounted(() => {
   getBanner();
   getHotList();
   getplaylistCatlist();
+  getNewAlbum();
 });
 // const router = useRouter();
 // 获取热门歌单的分类标签
@@ -140,6 +182,15 @@ const getHotList = () => {
     }
   });
 };
+// 新碟上架
+const newAlbum = ref([]);
+const getNewAlbum = () => {
+  topAlbum().then((res) => {
+    if (res.data.code === 200) {
+      newAlbum.value = res.data.weekData;
+    }
+  });
+};
 const stores = useStore();
 // 背景图下标
 const bgIndex = ref(0);
@@ -151,12 +202,16 @@ const getBannerIndex = (e) => {
 const handleSongList = (item) => {
   // router.push({ path: "/songsheet/detail", query: { id: item.id } });
 };
-// const xk = (e) => {
-// router.push({ path: "/songsheet/a", query: { cat: e.name } });
-// topPlaylist({ cat: e.name }).then((res) => {
-//   console.log("res:", res);
-// });
-// };
+// 数字格式，十万以内显示数字，十万以上显示xx万
+const formatNumber = computed(() => {
+  return (num) => {
+    if (num < 10000) {
+      return num;
+    } else {
+      return parseInt(num / 10000) + "万";
+    }
+  };
+});
 </script>
 
 <style lang="scss" scoped>

@@ -44,7 +44,7 @@ export default defineConfig(({ command, mode }) => {
       Icons(),
       ElementPlus({ useSource: true }),
       EslintPlugin({
-        fix: true,
+        // fix: true,
       }),
       // viteCompression({
       //   verbose: true,

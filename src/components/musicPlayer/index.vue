@@ -12,8 +12,8 @@
     </div>
     <div class="flex h-5/6 w-full">
       <!-- 左边 -->
-      <div class="flex h-full w-3/12">
-        <div class="hidden h-full w-1/2 whitespace-nowrap lg:block">
+      <div class="relative flex h-full w-3/12 overflow-hidden">
+        <div class="absolute h-full w-1/2 bg-white">
           <el-image
             :src="
               store.hasPlayList
@@ -25,21 +25,31 @@
           >
             <template #error>
               <div
-                class="flex h-full w-full items-center justify-center bg-slate-200 text-3xl text-slate-500"
+                class="flex h-full w-[100px] items-center justify-center text-3xl text-slate-500"
               >
                 <el-icon><i-ep-picture /></el-icon>
               </div>
             </template>
           </el-image>
         </div>
-        <div class="h-full w-full lg:w-1/2">
-          <div class="flex h-1/2 w-full items-center justify-center">
-            {{
-              store.hasPlayList ? store.playList[store.currentIndex].name : ""
-            }}
+        <div
+          class="absolute right-0 -z-10 h-full w-1/2 translate-x-full"
+          ref="songinfo"
+        >
+          <div
+            class="flex h-1/2 w-full items-center justify-center whitespace-nowrap"
+          >
+            <span>
+              {{
+                store.hasPlayList ? store.playList[store.currentIndex].name : ""
+              }}</span
+            >
           </div>
-          <div class="flex h-1/2 w-full items-center justify-center">
+          <div
+            class="flex h-1/2 w-full items-center justify-center overflow-hidden whitespace-nowrap"
+          >
             <span
+              ref="singer"
               v-for="(item, index) in store.hasPlayList
                 ? store.playList[store.currentIndex].ar
                 : []"
@@ -158,8 +168,9 @@
 </template>
 
 <script setup>
-// import songList from "./components/songList.vue";
+import gsap from "gsap";
 const store = useStore();
+
 // console.log(store.playList);
 // console.log(store.currentIndex);
 // console.log(store.playList[store.currentIndex].url);
@@ -191,6 +202,7 @@ const input = (val) => {
   audio.value.currentTime = val;
   // 取最后一次的值
 };
+const songinfo = ref(null); // 歌名
 onMounted(() => {
   // audio.value.src = store.playList[store.currentIndex].url.replace(
   //   "http",
@@ -199,7 +211,16 @@ onMounted(() => {
   audio.value.src = store.hasPlayList
     ? store.playList[store.currentIndex].url.replace("http", "https")
     : "";
-  // audio.value.play();
+  gsap.to(songinfo.value, {
+    // 向左滚动，360度
+    x: -180,
+    // 无限循环
+    repeat: -1,
+    // 持续时间
+    duration: 15,
+    // 速度
+    ease: "linear",
+  });
 });
 const audio = ref(null);
 const audioState = ref(false);

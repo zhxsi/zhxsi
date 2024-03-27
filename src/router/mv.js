@@ -9,7 +9,7 @@ const route = {
       path: "/mv/index",
       name: "mv",
       meta: { title: "mv" },
-      component: () => import("@/views/mv/index.vue"),
+      component: () => import("@/views/a/index.vue"),
     },
   ],
 };

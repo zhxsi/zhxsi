@@ -1,5 +1,15 @@
 <template>
-  <div>{{ lyric }}</div>
+  <div class="flex h-full w-full items-center justify-center">
+    <div class="h-1/2 w-1/2 overflow-hidden outline">
+      <ol v-for="(item, index) in lyric" :key="index" class="text-center">
+        <li>
+          <span v-for="(item2, index2) in item.words" :key="index2">{{
+            item2.duration
+          }}</span>
+        </li>
+      </ol>
+    </div>
+  </div>
 </template>
 
 <script setup>

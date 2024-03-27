@@ -2,6 +2,11 @@
   <div class="flex h-full w-full items-center justify-center">
     <div class="h-1/2 w-1/2 overflow-hidden outline">
       <ol v-for="(item, index) in lyric" :key="index" class="text-center">
+        <li v-if="hasOwnProperty(item, 't')">
+          <span v-for="(item, index) in item.c" :key="index">{{
+            item.tx
+          }}</span>
+        </li>
         <li>
           <span v-for="(item2, index2) in item.words" :key="index2">{{
             item2.duration
@@ -60,6 +65,10 @@ const parseLrcWord = (lrc) => {
     }
   }
   return result;
+};
+// 判断对象有没有某个属性
+const hasOwnProperty = (obj, key) => {
+  return Object.prototype.hasOwnProperty.call(obj, key);
 };
 </script>
 

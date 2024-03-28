@@ -8,7 +8,7 @@
         >
           <span
             :class="{
-              'text-slate-500': index === store.currentIndex,
+              'text-slate-500': index === store.playIndex,
             }"
             class="cursor-pointer"
             @click="changeSong(index)"
@@ -29,7 +29,7 @@ const store = useStore();
 // console.log("store:", store.playList);
 // 切换歌曲
 const changeSong = (index) => {
-  store.currentIndex = index;
+  store.playIndex = index;
 };
 </script>
 

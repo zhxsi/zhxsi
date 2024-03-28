@@ -16,9 +16,7 @@
         <div class="absolute z-10 h-full w-1/2 bg-white">
           <el-image
             :src="
-              store.hasPlayList
-                ? store.playList[store.currentIndex].al.picUrl
-                : ''
+              store.hasPlayList ? store.playList[store.playIndex].al.picUrl : ''
             "
             class="float-right h-full"
             fit="fill"
@@ -38,7 +36,7 @@
           >
             <span>
               {{
-                store.hasPlayList ? store.playList[store.currentIndex].name : ""
+                store.hasPlayList ? store.playList[store.playIndex].name : ""
               }}</span
             >
           </div>
@@ -48,7 +46,7 @@
             <span
               ref="singer"
               v-for="(item, index) in store.hasPlayList
-                ? store.playList[store.currentIndex].ar
+                ? store.playList[store.playIndex].ar
                 : []"
               :key="index"
               >{{ item.name }}
@@ -180,7 +178,7 @@ const playprogress = ref(0);
 // 获取歌曲总时长,单位秒
 const max = computed(() => {
   return store.playList.length !== 0
-    ? store.playList[store.currentIndex].dt / 1000
+    ? store.playList[store.playIndex].dt / 1000
     : 0;
 });
 //  <div class="flex hidden w-24 items-center text-center">
@@ -217,7 +215,7 @@ const playAnimation = () => {
 
 onMounted(() => {
   audio.value.src = store.hasPlayList
-    ? store.playList[store.currentIndex].url.replace("http", "https")
+    ? store.playList[store.playIndex].url.replace("http", "https")
     : "";
   playAnimation();
 });
@@ -239,17 +237,17 @@ const updata = () => {
 };
 const switchSongs = (flag) => {
   if (flag) {
-    if (store.currentIndex <= 0) {
-      store.currentIndex = 0;
+    if (store.playIndex <= 0) {
+      store.playIndex = 0;
     } else {
-      store.currentIndex--;
+      store.playIndex--;
       songinfo.value.restart();
     }
   } else {
-    if (store.currentIndex >= store.playList.length - 1) {
-      store.currentIndex = store.playList.length - 1;
+    if (store.playIndex >= store.playList.length - 1) {
+      store.playIndex = store.playList.length - 1;
     } else {
-      store.currentIndex++;
+      store.playIndex++;
       songinfo.value.restart();
     }
   }

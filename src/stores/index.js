@@ -8,7 +8,7 @@ export const useStore = defineStore("main", {
       // 当前播放列表
       playList: [],
       // 当前播放歌曲索引
-      currentIndex: 0,
+      playIndex: null,
       // 播放顺序，0为列表循环，1为单曲循环，2为随机播放
       mode: 0,
       // 是否播放
@@ -46,7 +46,15 @@ export const useStore = defineStore("main", {
     getCookie(cookie) {
       this.user.cookie = cookie;
     },
-    // 设置loading状态
+    // 立即播放
+    playNow(list) {
+      this.playList.push(list);
+      this.playIndex = this.playList.length - 1;
+    },
+    // 添加到播放列表
+    addPlayList(list) {
+      this.playList.push(list);
+    },
   },
   persist: true,
 });

@@ -1,0 +1,43 @@
+name: build-deploy
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+          fetch-depth: 0
+
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@v2
+        with:
+          hugo-version: '0.110.0'
+
+      - name: build
+        run: |
+          npm install
+          npm run build:prod
+
+      - name: deploy
+        uses: peaceiris/actions-gh-pages@v4
+        if: github.ref == 'refs/heads/main'
+        with:
+          personal_token: ${{ secrets.PERSONAL_TOKEN }}
+          external_repository: zhxsi/zhxsi.github.io
+          publish_dir: ./dist
+          publish_branch: main
+          user_name: yl
+          user_email: ZHXSI1324@163.com
+          full_commit_message: ${{ github.event.head_commit.message }}
+          enable_jekyll: true

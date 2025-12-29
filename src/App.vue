@@ -1,17 +1,9 @@
 <template>
   <div>
-    <button @click="increment">++</button>
-    <div>{{ count }}</div>
+    <img src="@/assets/vue.svg" alt="" />
   </div>
 </template>
 
-<script setup lang="ts">
-import { ref } from 'vue'
-const count = ref(0)
-function increment() {
-  count.value++
-}
+<script setup lang="ts"></script>
 
-</script>
-
-<style scoped></style>
+<style lang="scss" scoped></style>

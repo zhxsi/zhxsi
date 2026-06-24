@@ -1,0 +1,16 @@
+node_modules
+dist
+build
+coverage
+.vscode
+.idea
+.github
+
+*.min.js
+*.lock
+*.html
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+
+public

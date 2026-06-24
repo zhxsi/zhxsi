@@ -23,7 +23,6 @@ dist-ssr
 *.sln
 *.sw?
 .vscode
-*lock*
 auto-imports.d.ts
 components.d.ts
 .eslintrc-auto-import.json
